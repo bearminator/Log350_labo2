@@ -1,0 +1,2 @@
+CHANGED,C:\Users\DEV\StudioProjects\Log350Example6\app\build\intermediates\transforms\instantRun\debug\folders\4000\5\enhanced\log350\example\example6\DrawingView$override.class
+CHANGED,C:\Users\DEV\StudioProjects\Log350Example6\app\build\intermediates\transforms\instantRun\debug\folders\4000\5\enhanced\com\android\tools\fd\runtime\AppPatchesLoaderImpl.class
