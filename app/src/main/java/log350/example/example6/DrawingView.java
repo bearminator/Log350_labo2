@@ -365,6 +365,12 @@ public class DrawingView extends View {
 								currentMode = MODE_CREATE;
 								cursor.setType( MyCursor.TYPE_BUTTON );
 							}
+							else if ( deleteBouton.contains(p_pixels) ) {
+								for ( Shape s : selectedShapes ) {
+									shapeContainer.removeShape(s);
+								}
+								selectedShapes.clear();
+							}
 							else {
 								currentMode = MODE_CAMERA_MANIPULATION;
 								cursor.setType( MyCursor.TYPE_DRAGGING );
