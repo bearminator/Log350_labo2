@@ -15,7 +15,6 @@ import android.view.MotionEvent;
 import android.view.View;
 
 
-
 // This class stores the current position of a finger,
 // as well as the history of previous positions of that finger
 // during its drag.
@@ -188,7 +187,6 @@ public class DrawingView extends View {
 	MyButton lassoButton = new MyButton( "Lasso", 10, 70, 140, 140 );
 	MyButton createBouton = new MyButton( "Create Button", 10, 230, 140, 140 );
 	MyButton deleteBouton = new MyButton( "Delete Button", 10, 390, 140, 140 );
-	
 	OnTouchListener touchListener;
 	
 	public DrawingView(Context context) {
@@ -377,6 +375,36 @@ public class DrawingView extends View {
 							}
 						}
 						break;
+
+						case MODE_CREATE :
+							if ( type == MotionEvent.ACTION_DOWN ) {
+								if ( cursorContainer.getNumCursorsOfGivenType(MyCursor.TYPE_DRAGGING) == 1 )
+									// there's already a finger dragging out the lasso
+									cursor.setType(MyCursor.TYPE_IGNORE);
+								else
+									cursor.setType(MyCursor.TYPE_DRAGGING);
+							}
+							else if ( type == MotionEvent.ACTION_MOVE ) {
+								// no further updating necessary here
+							}
+							else if ( type == MotionEvent.ACTION_UP ) {
+								if ( cursor.getType() == MyCursor.TYPE_DRAGGING ) {
+
+										ArrayList<Point2D> newPoints = new ArrayList<Point2D>();
+										for (Point2D p : cursor.getPositions())
+											newPoints.add(gw.convertPixelsToWorldSpaceUnits(p));
+
+										newPoints = Point2DUtil.computeConvexHull(cursor.getPositions());
+										shapeContainer.addShape(newPoints);
+
+									}
+								cursorContainer.removeCursorByIndex( cursorIndex );
+								if ( cursorContainer.getNumCursors() == 0 ) {
+									currentMode = MODE_NEUTRAL;
+								}
+							}
+							break;
+
 					case MODE_CAMERA_MANIPULATION :
 						if ( cursorContainer.getNumCursors() == 2 && type == MotionEvent.ACTION_MOVE ) {
 							MyCursor cursor0 = cursorContainer.getCursorByIndex( 0 );
@@ -401,7 +429,7 @@ public class DrawingView extends View {
 								cursor1.getCurrentPosition()
 						);
 
-					}
+						}
 						else if ( type == MotionEvent.ACTION_UP ) {
 							cursorContainer.removeCursorByIndex( cursorIndex );
 							if ( cursorContainer.getNumCursors() == 0 )
