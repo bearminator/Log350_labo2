@@ -410,6 +410,36 @@ public class DrawingView extends View {
 								gw.convertPixelsToWorldSpaceUnits( cursor1.getCurrentPosition() )
 							);
 						}
+						//With one finger, we can drag forms
+						else if( cursorContainer.getNumCursors() == 1 && type == MotionEvent.ACTION_MOVE && indexOfShapeBeingManipulated>=0 ) {
+
+							MyCursor cursor0 = cursorContainer.getCursorByIndex( 0 );
+							MyCursor cursor1 = cursorContainer.getCursorByIndex( 0 );
+							Shape shape = shapeContainer.getShape( indexOfShapeBeingManipulated );
+
+							//We can drag an hole selection on forms
+							if(selectedShapes.contains(shape)) {
+								for (Shape s : selectedShapes) {
+									Point2DUtil.transformPointsBasedOnDisplacementOfTwoPoints(
+											s.getPoints(),
+											gw.convertPixelsToWorldSpaceUnits(cursor0.getPreviousPosition()),
+											gw.convertPixelsToWorldSpaceUnits(cursor1.getPreviousPosition()),
+											gw.convertPixelsToWorldSpaceUnits(cursor0.getCurrentPosition()),
+											gw.convertPixelsToWorldSpaceUnits(cursor1.getCurrentPosition())
+									);
+								}
+							}
+							else
+							{
+								Point2DUtil.transformPointsBasedOnDisplacementOfTwoPoints(
+										shape.getPoints(),
+										gw.convertPixelsToWorldSpaceUnits( cursor0.getPreviousPosition() ),
+										gw.convertPixelsToWorldSpaceUnits( cursor1.getPreviousPosition() ),
+										gw.convertPixelsToWorldSpaceUnits( cursor0.getCurrentPosition() ),
+										gw.convertPixelsToWorldSpaceUnits( cursor1.getCurrentPosition() )
+								);
+							}
+						}
 						else if ( type == MotionEvent.ACTION_UP ) {
 							cursorContainer.removeCursorByIndex( cursorIndex );
 							if ( cursorContainer.getNumCursors() == 0 ) {
