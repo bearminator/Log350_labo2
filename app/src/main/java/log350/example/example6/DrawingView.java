@@ -350,12 +350,15 @@ public class DrawingView extends View {
 						if ( cursorContainer.getNumCursors() == 1 && type == MotionEvent.ACTION_DOWN ) {
 							Point2D p_pixels = new Point2D(x,y);
 							Point2D p_world = gw.convertPixelsToWorldSpaceUnits( p_pixels );
+
 							indexOfShapeBeingManipulated = shapeContainer.indexOfShapeContainingGivenPoint( p_world );
+							boolean inRect = Point2DUtil.isClickInsidePolygone(selectedShapes,p_world);
+
 							if ( lassoButton.contains(p_pixels) ) {
 								currentMode = MODE_LASSO;
 								cursor.setType( MyCursor.TYPE_BUTTON );
 							}
-							else if ( indexOfShapeBeingManipulated >= 0 ) {
+							else if ( indexOfShapeBeingManipulated >= 0 || inRect == true) {
 								currentMode = MODE_SHAPE_MANIPULATION;
 								cursor.setType( MyCursor.TYPE_DRAGGING );
 							}
@@ -480,13 +483,28 @@ public class DrawingView extends View {
 								);
 							}
 						}
-						else if ( type == MotionEvent.ACTION_UP ) {
-							cursorContainer.removeCursorByIndex( cursorIndex );
-							if ( cursorContainer.getNumCursors() == 0 ) {
-								currentMode = MODE_NEUTRAL;
-								indexOfShapeBeingManipulated = -1;
-							}
+						else if( cursorContainer.getNumCursors() == 1 && type == MotionEvent.ACTION_MOVE) {
+							MyCursor _cursor = cursorContainer.getCursorByIndex( 0 );
+							Point2D p_pixels = new Point2D(x,y);
+							Point2D p_world = gw.convertPixelsToWorldSpaceUnits( p_pixels );
+
+								for(Shape selectShape : selectedShapes){
+									Point2DUtil.transformPointsBasedOnDisplacementOfTwoPoints(
+											selectShape.getPoints(),
+											gw.convertPixelsToWorldSpaceUnits(_cursor.getPreviousPosition()),
+											gw.convertPixelsToWorldSpaceUnits(_cursor.getPreviousPosition()),
+											gw.convertPixelsToWorldSpaceUnits(_cursor.getCurrentPosition()),
+											gw.convertPixelsToWorldSpaceUnits(_cursor.getCurrentPosition())
+											);
+								}
 						}
+							else if ( type == MotionEvent.ACTION_UP ) {
+								cursorContainer.removeCursorByIndex( cursorIndex );
+								if ( cursorContainer.getNumCursors() == 0 ) {
+									currentMode = MODE_NEUTRAL;
+									indexOfShapeBeingManipulated = -1;
+								}
+							}
 						break;
 					case MODE_LASSO :
 						if ( type == MotionEvent.ACTION_DOWN ) {

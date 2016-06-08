@@ -511,5 +511,40 @@ public class Point2DUtil {
 		return computeAverageAngle( angles, 0 );
 	}
 
+	static public boolean isClickInsidePolygone(ArrayList< Shape > shapes, Point2D point){
+
+		float x_max = 0, x_min = 999999999 , y_max = 0, y_min = 999999999;
+		boolean isInto = false;
+
+		if(!shapes.isEmpty()){
+			for(Shape s : shapes){
+				for(Point2D p : s.getPoints()){
+					if(p.x() > x_max )
+						x_max = p.x();
+					if(p.x() < x_min )
+						x_min = p.x();
+					if(p.x() > y_max )
+						y_max = p.y();
+					if(p.y() < y_min )
+						y_min = p.y();
+				}
+			}
+
+			if(point.x() <= x_max && point.x() >= x_min &&
+					point.y() <= y_max && point.y() >= y_min)
+			{
+				isInto = true;
+			}
+		}
+
+		return isInto;
+	}
+
+	static public boolean isCoordonneeInsidePolygone(ArrayList< Shape > shapes, MyCursor cursor){
+
+		Point2D p2d = new Point2D(cursor.getFirstPosition().x(),cursor.getFirstPosition().y());
+		return isClickInsidePolygone(shapes,p2d);
+	}
+
 }
 
